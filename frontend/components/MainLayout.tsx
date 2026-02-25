@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { Layout, Menu, Avatar, Space, Badge, Tag } from 'antd'
-import { PieChartOutlined, ThunderboltOutlined, SettingOutlined, BellOutlined, RiseOutlined } from '@ant-design/icons'
+import { Layout, Menu, Avatar, Space, Badge, Tag, Tooltip } from 'antd'
+import { PieChartOutlined, ThunderboltOutlined, SettingOutlined, BellOutlined, RiseOutlined, SunOutlined, MoonOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/router'
+import { useTheme } from '../lib/ThemeContext'
 
 const { Header, Sider, Content } = Layout
 
@@ -14,9 +15,11 @@ const NAV_ITEMS = [
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [collapsed, setCollapsed] = useState(false)
+  const { theme, toggleTheme } = useTheme()
+  const isDark = theme === 'dark'
 
   return (
-    <Layout style={{ minHeight: '100vh', background: '#060d1a' }}>
+    <Layout style={{ minHeight: '100vh', background: 'var(--bg-base)', transition: 'background 0.3s' }}>
       {/* ── Sidebar ── */}
       <Sider
         collapsible
@@ -24,14 +27,15 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
         onCollapse={setCollapsed}
         width={220}
         style={{
-          background: 'linear-gradient(180deg,#0a1628 0%,#060d1a 100%)',
-          borderRight: '1px solid rgba(56,189,248,0.08)',
+          background: 'var(--bg-sider)',
+          borderRight: '1px solid var(--sider-border)',
           position: 'fixed',
           height: '100vh',
           left: 0,
           top: 0,
           overflow: 'auto',
-          zIndex: 100
+          zIndex: 100,
+          transition: 'background 0.3s'
         }}
       >
         {/* Logo */}
@@ -63,7 +67,7 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
           >
             <RiseOutlined />
           </div>
-          {!collapsed && <span style={{ color: '#f0f9ff', fontWeight: 700, fontSize: 15, whiteSpace: 'nowrap' }}>Trading Agent</span>}
+          {!collapsed && <span style={{ color: 'var(--text-logo)', fontWeight: 700, fontSize: 15, whiteSpace: 'nowrap' }}>Stock Analysis</span>}
         </div>
 
         {/* Nav */}
@@ -90,10 +94,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               left: 0,
               right: 0,
               padding: '12px 16px',
-              borderTop: '1px solid rgba(56,189,248,0.08)'
+              borderTop: '1px solid var(--sider-border)'
             }}
           >
-            <div style={{ fontSize: 11, color: '#64748b', marginBottom: 4 }}>AI 引擎</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted)', marginBottom: 4 }}>AI 引擎</div>
             <Tag color="cyan" style={{ fontSize: 11 }}>
               DeepSeek
             </Tag>
@@ -115,12 +119,53 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             alignItems: 'center'
           }}
         >
-          <div style={{ color: '#94a3b8', fontSize: 13 }}>
+          <div style={{ color: 'var(--text-secondary)', fontSize: 13 }}>
             {new Date().toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })}
           </div>
           <Space size={16}>
+            {/* 明暗切换按钮 */}
+            <Tooltip title={isDark ? '切换亮色模式' : '切换暗色模式'}>
+              <div
+                onClick={toggleTheme}
+                style={{
+                  width: 40,
+                  height: 22,
+                  borderRadius: 11,
+                  background: isDark ? 'rgba(56,189,248,0.15)' : 'linear-gradient(135deg,#38bdf8,#818cf8)',
+                  border: `1px solid ${isDark ? 'rgba(56,189,248,0.35)' : 'transparent'}`,
+                  boxShadow: isDark ? 'none' : '0 2px 8px rgba(56,189,248,0.4)',
+                  cursor: 'pointer',
+                  position: 'relative',
+                  transition: 'all 0.3s ease',
+                  display: 'flex',
+                  alignItems: 'center',
+                  padding: '0 3px',
+                  flexShrink: 0
+                }}
+              >
+                <div
+                  style={{
+                    width: 16,
+                    height: 16,
+                    borderRadius: '50%',
+                    background: isDark ? '#38bdf8' : '#ffffff',
+                    transform: isDark ? 'translateX(0)' : 'translateX(18px)',
+                    transition: 'transform 0.3s ease, background 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: 9,
+                    color: isDark ? '#fff' : '#38bdf8',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                    flexShrink: 0
+                  }}
+                >
+                  {isDark ? <MoonOutlined /> : <SunOutlined />}
+                </div>
+              </div>
+            </Tooltip>
             <Badge count={2} size="small">
-              <BellOutlined style={{ color: '#94a3b8', fontSize: 18, cursor: 'pointer' }} />
+              <BellOutlined style={{ color: 'var(--text-secondary)', fontSize: 18, cursor: 'pointer' }} />
             </Badge>
             <Avatar
               size={34}

@@ -15,6 +15,7 @@ import {
 } from '@ant-design/icons'
 import MainLayout from '../components/MainLayout'
 import { startAnalysis, getTask } from '../lib/api'
+import { useTheme } from '../lib/ThemeContext'
 
 const AGENTS = [
   { key: 'market', icon: <GlobalOutlined />, label: '市场分析师', desc: '宏观环境与行业动态' },
@@ -30,6 +31,8 @@ export default function Home() {
   const [taskId, setTaskId] = useState<string | null>(null)
   const [status, setStatus] = useState<any>(null)
   const [loading, setLoading] = useState(false)
+  const { theme } = useTheme()
+  const isDark = theme === 'dark'
   const [error, setError] = useState<string | null>(null)
   const [activeStep, setActiveStep] = useState(0)
 
@@ -73,7 +76,7 @@ export default function Home() {
   return (
     <MainLayout>
       <Head>
-        <title>单股看板 · Trading Agent</title>
+        <title>单股看板 · Stock Analysis</title>
       </Head>
 
       <Row gutter={[20, 20]}>
@@ -84,7 +87,7 @@ export default function Home() {
 
             {/* 股票输入 */}
             <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 12, color: '#94a3b8', marginBottom: 6 }}>股票代码 / 名称</div>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 6 }}>股票代码 / 名称</div>
               <Space.Compact style={{ width: '100%' }}>
                 <Select
                   value={market}
@@ -101,8 +104,12 @@ export default function Home() {
                   value={symbol}
                   onChange={(e) => setSymbol(e.target.value)}
                   onPressEnter={handleStart}
-                  prefix={<SearchOutlined style={{ color: '#475569' }} />}
-                  style={{ background: 'rgba(15,23,42,0.8)', borderColor: 'rgba(56,189,248,0.2)', color: '#e2e8f0' }}
+                  prefix={<SearchOutlined style={{ color: isDark ? '#475569' : '#64748b' }} />}
+                  style={{
+                    background: isDark ? 'rgba(15,23,42,0.8)' : 'rgba(255,255,255,0.95)',
+                    borderColor: isDark ? 'rgba(56,189,248,0.2)' : 'rgba(56,189,248,0.35)',
+                    color: isDark ? '#e2e8f0' : '#1e293b'
+                  }}
                 />
               </Space.Compact>
             </div>
