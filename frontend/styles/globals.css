@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+html,
+body,
+#__next {
+  height: 100%;
+  background: #060d1a;
+}
+
+body {
+  margin: 0;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+  color: #e2e8f0;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e3a5f;
+  border-radius: 2px;
+}
+
+/* Glow card */
+.glow-card {
+  background: linear-gradient(135deg, rgba(14, 30, 60, 0.9) 0%, rgba(6, 18, 42, 0.95) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.15);
+  border-radius: 16px;
+  box-shadow:
+    0 0 30px rgba(56, 189, 248, 0.05),
+    0 4px 24px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.2s;
+}
+.glow-card:hover {
+  box-shadow:
+    0 0 40px rgba(56, 189, 248, 0.12),
+    0 4px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Tag badge */
+.tag-bull {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+.tag-bear {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+
+/* Pulse dot */
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #38bdf8;
+  animation: pulse 1.5s infinite;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+/* antd dark overrides */
+.ant-layout {
+  background: transparent !important;
+}
+.ant-layout-header {
+  background: rgba(6, 13, 26, 0.8) !important;
+  border-bottom: 1px solid rgba(56, 189, 248, 0.08);
+  backdrop-filter: blur(12px);
+}
+.ant-menu.ant-menu-dark {
+  background: transparent !important;
+}
+.ant-menu-dark .ant-menu-item-selected {
+  background: rgba(56, 189, 248, 0.12) !important;
+  border-radius: 8px;
+}
+.ant-steps-item-process .ant-steps-item-icon {
+  background: #38bdf8 !important;
+  border-color: #38bdf8 !important;
+}
+.ant-progress-bg {
+  background: linear-gradient(90deg, #38bdf8, #818cf8) !important;
+}

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "trading-agent-backend"
+version = "0.1.0"
+description = "Backend for trading agent using FastAPI"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.100.0"
+uvicorn = {extras = ["standard"], version = "^0.23.0"}
+celery = "^5.3.0"
+redis = "^5.0.9"
+motor = "^4.4.0"  # async mongo driver
+pydantic = "^2.6.0"
+httpx = "^0.24.0"
+python-dotenv = "^1.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
