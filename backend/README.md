@@ -1,17 +1,25 @@
-Backend (FastAPI)
+# Backend
 
-运行开发环境：
+FastAPI 实现的多角色股票分析演示服务。
 
-1. 进入 backend 目录
-2. 建议使用 poetry 创建虚拟环境：
-   poetry install
-3. 启动服务：
-   uvicorn backend.app.main:app --reload --host 0.0.0.0 --port 8000
+## 结构
 
-异步任务：
+- `models.py`：请求、任务、进度和分析结果模型
+- `analysis.py`：分析角色编排与结果汇总
+- `store.py`：可替换的任务存储层
+- `routes.py`：分析和任务查询 API
 
-- Celery + Redis（待实现任务 worker）
+默认使用内存存储，适合本地演示和单实例部署。生产环境可将 `TaskStore` 替换为 Redis 或数据库实现，并将 `run_analysis` 交给任务队列执行，API 数据结构无需改变。
 
-数据库：
+## 运行
 
-- 使用 MongoDB（motor async driver）
+```bash
+poetry install
+poetry run uvicorn app.main:app --reload
+```
+
+## 测试
+
+```bash
+poetry run pytest
+```

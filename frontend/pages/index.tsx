@@ -14,7 +14,7 @@ import {
   GlobalOutlined
 } from '@ant-design/icons'
 import MainLayout from '../components/MainLayout'
-import { startAnalysis, getTask } from '../lib/api'
+import { startAnalysis, getTask, type AnalysisTask, type Market } from '../lib/api'
 import { useTheme } from '../lib/ThemeContext'
 
 const AGENTS = [
@@ -27,9 +27,9 @@ const AGENTS = [
 export default function Home() {
   const [symbol, setSymbol] = useState('')
   const [depth, setDepth] = useState(3)
-  const [market, setMarket] = useState('A')
+  const [market, setMarket] = useState<Market>('A')
   const [taskId, setTaskId] = useState<string | null>(null)
-  const [status, setStatus] = useState<any>(null)
+  const [status, setStatus] = useState<AnalysisTask | null>(null)
   const [loading, setLoading] = useState(false)
   const { theme } = useTheme()
   const isDark = theme === 'dark'
@@ -42,7 +42,7 @@ export default function Home() {
       try {
         const r = await getTask(taskId)
         setStatus(r.data)
-        const step = r.data?.meta?.step ?? 0
+        const step = r.data?.progress?.step ?? 0
         setActiveStep(step)
         if (r.data.state === 'SUCCESS' || r.data.state === 'FAILURE') clearInterval(iv)
       } catch (e) {
@@ -59,7 +59,7 @@ export default function Home() {
     setActiveStep(0)
     setLoading(true)
     try {
-      const r = await startAnalysis(symbol.trim())
+      const r = await startAnalysis(symbol.trim(), market, depth)
       setTaskId(r.data.task_id)
     } catch (e: any) {
       setError(e?.response?.data?.detail || '后端连接失败，请检查服务是否启动')
@@ -68,9 +68,10 @@ export default function Home() {
     }
   }
 
-  const isRunning = status && status.state === 'PROGRESS'
+  const isRunning = status && (status.state === 'PENDING' || status.state === 'PROGRESS')
   const isDone = status && status.state === 'SUCCESS'
-  const score = status?.result?.score ?? null
+  const isFailed = status && status.state === 'FAILURE'
+  const score = status?.result?.score ?? 0
   const scoreColor = score >= 70 ? '#34d399' : score >= 40 ? '#fbbf24' : '#f87171'
 
   return (
@@ -91,7 +92,7 @@ export default function Home() {
               <Space.Compact style={{ width: '100%' }}>
                 <Select
                   value={market}
-                  onChange={setMarket}
+                  onChange={(value) => setMarket(value as Market)}
                   style={{ width: 80 }}
                   options={[
                     { value: 'A', label: 'A股' },
@@ -223,7 +224,7 @@ export default function Home() {
                 </span>
               </div>
               <Progress
-                percent={Math.round((activeStep / 5) * 100)}
+                percent={Math.round((activeStep / AGENTS.length) * 100)}
                 strokeColor={{ '0%': '#38bdf8', '100%': '#818cf8' }}
                 trailColor="rgba(56,189,248,0.08)"
                 showInfo={false}
@@ -245,6 +246,15 @@ export default function Home() {
                     ) : undefined
                 }))}
               />
+              {isFailed && (
+                <Alert
+                  type="error"
+                  showIcon
+                  message="分析失败"
+                  description={status.error || '请稍后重试'}
+                  style={{ marginTop: 16 }}
+                />
+              )}
             </div>
           )}
 
@@ -319,7 +329,28 @@ export default function Home() {
                 >
                   {status.result.summary || '暂无分析摘要'}
                 </div>
+                <Alert
+                  type="warning"
+                  showIcon
+                  message={status.result.disclaimer}
+                  style={{ marginTop: 16 }}
+                />
               </div>
+
+              <Row gutter={[16, 16]}>
+                {status.result.agents.map((agent) => (
+                  <Col xs={24} md={12} key={agent.key}>
+                    <div className="glow-card" style={{ padding: 20, height: '100%' }}>
+                      <Space style={{ width: '100%', justifyContent: 'space-between' }}>
+                        <strong>{agent.name}</strong>
+                        <Tag color={agent.score >= 68 ? 'green' : agent.score >= 52 ? 'blue' : 'orange'}>{agent.score}/100</Tag>
+                      </Space>
+                      <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7 }}>{agent.conclusion}</p>
+                      <Space wrap>{agent.signals.map((signal) => <Tag key={signal}>{signal}</Tag>)}</Space>
+                    </div>
+                  </Col>
+                ))}
+              </Row>
             </div>
           )}
         </Col>

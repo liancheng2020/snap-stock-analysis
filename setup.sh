@@ -7,6 +7,6 @@ npm install
 cd ..
 
 # Start docker compose
-docker compose up --build -d
+docker compose -f deploy/docker-compose.yml up --build -d
 
 echo "Setup complete. Frontend on http://localhost:3000, backend on http://localhost:8000"

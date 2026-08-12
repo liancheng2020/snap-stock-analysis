@@ -1,56 +1,94 @@
-# AI 智能股票分析系统
+# Snap Stock Analysis
 
-本项目旨在构建一个基于 AI 多智能体协作的深度股票分析平台，集成实时行情、财务报表、新闻资讯及社交媒体情绪，由多个专业 AI 角色协作产出深度投资研究报告。
+一个简洁、可运行的多角色股票分析演示项目。输入股票代码、市场和分析深度后，后端异步组织市场、基本面、新闻和情绪四个分析角色，前端实时展示任务进度与汇总结果。
 
-## 核心功能模块
+> 默认分析结果由可复现的演示引擎生成，不包含实时行情，也不构成投资建议。
 
-### 1. 单股分析（核心看板）
+## 功能
 
-- 支持股票代码/名称输入，自动识别市场类型（A股、港股、美股）
-- 可选分析日期，支持历史回溯
-- 分析深度分级（Level 1-5）：快速模式/深度模式
-- 多智能体协作（市场分析师、基本面分析师、新闻分析师、社媒分析师）
-- 参考界面：
-  ![单股分析界面](./single.png)
+- A 股、港股、美股代码输入与标准化
+- Level 1-5 分析深度
+- 四角色协作分析与综合评分
+- 异步任务进度、失败状态和历史任务列表
+- 深色/浅色主题与响应式页面
+- FastAPI 自动接口文档
+- 前后端 Docker 一键启动
+- 后端 API 测试和 GitHub Actions
 
-### 2. 任务中心与状态追踪
+## 技术栈
 
-- 分析任务异步处理，支持多任务并发
-- 实时展示各智能体工作状态与进度
-- 分析报告自动归档至历史库
-
-### 3. 系统配置
-
-- 支持 DeepSeek、GPT-4、Claude、Qwen 等多模型切换
-- 可配置分级策略（快速模型/深度模型）
-- API 密钥管理与可用性测试，自动提示 401 报错
-
-## 技术需求
-
-- 行情数据：Tushare、AkShare、yfinance
-- 资讯数据：财联社、东方财富等主流金融媒体爬取
-- 多智能体架构：Researcher -> Critic -> Writer 协作流，首席分析师共识机制
-
-## UI/UX 设计
-
-- 侧边导航栏+顶部状态栏，主内容区模块化卡片设计
-- 响应式布局，适配多分辨率
-- 明确 Loading 状态与友好错误提示
+- 前端：Next.js 13、React 18、TypeScript、Ant Design
+- 后端：FastAPI、Pydantic、Python 3.11
+- 部署：Docker Compose
 
 ## 快速开始
 
-1. 克隆本仓库
-2. 配置数据源 API 密钥
-3. 运行 Docker 环境（Nginx + Backend + Frontend + Redis + MongoDB）
-4. 访问前端界面，体验智能股票分析
+### Docker
 
-## 待办事项
+```bash
+docker compose -f deploy/docker-compose.yml up --build
+```
 
-- [ ] 确定数据源 API 供应商及预算
-- [ ] 搭建 Docker 开发环境
-- [ ] 编写初始化脚本（导入默认配置与创建管理账号）
-- [ ] 调试大模型 API 连通性
+- 前端：http://localhost:3000
+- 后端：http://localhost:8000
+- API 文档：http://localhost:8000/docs
 
----
+### 本地开发
 
-如需进一步细化数据库表结构、Nginx 配置或 AI 分析师角色 Prompt，请提出具体需求。
+后端：
+
+```bash
+cd backend
+poetry install
+poetry run uvicorn app.main:app --reload
+```
+
+前端：
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+## API
+
+```text
+POST /api/analysis/single  创建分析任务
+GET  /api/tasks/{id}      查询任务状态
+GET  /api/tasks           查询最近任务
+GET  /health              服务健康检查
+```
+
+创建任务示例：
+
+```json
+{
+  "symbol": "00700",
+  "market": "HK",
+  "depth": 3
+}
+```
+
+## 扩展真实数据源
+
+核心分析流程位于 `backend/app/analysis.py`。接入真实系统时，可以保持 API 和任务模型不变，将演示角色替换为：
+
+1. 行情数据适配器，如 AkShare、Tushare 或 yfinance。
+2. 财务数据与公告检索器。
+3. 新闻与情绪数据源。
+4. 支持结构化输出的 LLM Provider。
+5. Redis/Celery 任务队列及持久化 TaskStore。
+
+数据源失败时应明确标记缺失，不能用模拟数据冒充真实行情。
+
+## 测试
+
+```bash
+cd backend && poetry run pytest
+cd frontend && npm run build
+```
+
+## License
+
+[MIT](./LICENSE)
