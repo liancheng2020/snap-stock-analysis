@@ -17,7 +17,7 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install poetry
-      - run: poetry install
+      - run: poetry install --no-root
       - run: poetry run pytest
 
   frontend:
